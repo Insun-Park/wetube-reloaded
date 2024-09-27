@@ -1,0 +1,19 @@
+{
+  "name": "wetube",
+  "version": "1.0.0",
+  "description": "the best way to watch video",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Insun-Park/wetube-reloaded.git"
+  },
+  "author": "Insun Park",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Insun-Park/wetube-reloaded/issues"
+  },
+  "homepage": "https://github.com/Insun-Park/wetube-reloaded#readme"
+}
