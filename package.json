@@ -14,12 +14,15 @@
   "homepage": "https://github.com/Insun-Park/wetube-reloaded#readme",
   "dependencies": {
     "express": "^4.21.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "pug": "^3.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/node": "^7.25.0",
     "@babel/preset-env": "^7.25.4",
-    "nodemon": "^3.1.7"
+    "@prettier/plugin-pug": "^3.1.0",
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3"
   }
 }
