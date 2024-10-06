@@ -7,13 +7,14 @@
     "url": "git+https://github.com/Insun-Park/wetube-reloaded.git"
   },
   "scripts": {
-    "dev": "nodemon --exec babel-node src/server.js"
+    "dev": "nodemon --exec babel-node src/init.js"
   },
   "author": "Insun Park",
   "license": "ISC",
   "homepage": "https://github.com/Insun-Park/wetube-reloaded#readme",
   "dependencies": {
     "express": "^4.21.0",
+    "mongoose": "^8.7.0",
     "morgan": "^1.10.0",
     "pug": "^3.0.3"
   },

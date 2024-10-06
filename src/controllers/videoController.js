@@ -1,47 +1,55 @@
-export const trendVideos = (req, res) => {
-  const video = [
-    {
-      title: "1st Video",
-      rating: 4,
-      comments: 43,
-      createdAt: "2 hours ago",
-      views: 234,
-    },
-    {
-      title: "Begin Again",
-      rating: 5,
-      comments: 43,
-      createdAt: "2 hours ago",
-      views: 234,
-    },
-    {
-      title: "All or Nothing - Arsenal",
-      rating: 5,
-      comments: 413,
-      createdAt: "2 hours ago",
-      views: 232214,
-    },
-    {
-      title: "Final Video",
-      rating: 2,
-      comments: 3,
-      createdAt: "2 minutes ago",
-      views: 45234,
-    },
-  ];
-  return res.render("home", { pageTitle: "Home", video });
+import Video from "../models/Video";
+
+export const home = async (req, res) => {
+  const videos = await Video.find({});
+  return res.render("home", { pageTitle: "Home", videos });
 };
-export const videoWatch = (req, res) =>
-  res.render("watch", { videoNum: `${req.params.id}` });
+
+export const videoWatch = (req, res) => {
+  const videos = Video.find({});
+  return res.render("watch", {
+    pageTitle: `watching `,
+    videos,
+  });
+};
+
 export const videoEdit = (req, res) => {
-  console.log(req.params);
-  const videoNum = req.params.id;
-  return res.send(`Editing ${videoNum} Videos!`);
+  const id = req.params.id;
+  return res.render("edit", {
+    pageTitle: "Editing",
+  });
 };
-export const videoSearch = (req, res) => res.send("Search Videos");
+
+export const postEdit = (req, res) => {
+  const { title } = req.body;
+  return res.redirect(`/`);
+};
+
 export const deleteVideo = (req, res) => {
   console.log(req.params);
   const videoNum = req.params.id;
   return res.send(`Delete ${videoNum}th Videos`);
 };
-export const upload = (req, res) => res.send("Upload Video");
+
+export const getUpload = (req, res) => {
+  return res.render("upload", { pageTitle: "Upload" });
+};
+
+export const postUpload = async (req, res) => {
+  const { title, description, hashtags } = req.body;
+  try {
+    await Video.create({
+      title,
+      description,
+      hashtags: hashtags.split(",").map((word) => `#${word}`),
+    });
+    return res.redirect(`/`);
+  } catch (error) {
+    return res.render("upload", {
+      pageTitle: "Upload Video",
+      errorMessage: error._message,
+    });
+  }
+};
+
+export const videoSearch = (req, res) => res.send("Search Videos");
