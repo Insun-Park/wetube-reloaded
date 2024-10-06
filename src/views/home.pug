@@ -2,7 +2,7 @@ extends base.pug
 include mixins/video
 
 block content
-    each item in videos
+    each item in video
         +video(item)
     else 
         li Sorry, Nothing found.
