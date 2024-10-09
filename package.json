@@ -13,6 +13,7 @@
   "license": "ISC",
   "homepage": "https://github.com/Insun-Park/wetube-reloaded#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "express": "^4.21.0",
     "mongoose": "^8.7.0",
     "morgan": "^1.10.0",
