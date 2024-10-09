@@ -1,7 +1,7 @@
 import Video from "../models/Video";
 
 export const home = async (req, res) => {
-  const video = await Video.find({});
+  const video = await Video.find({}).sort({ createdAt: 1 });
   return res.render("home", { pageTitle: "Home", video });
 };
 
@@ -26,7 +26,6 @@ export const getEdit = async (req, res) => {
   } else {
     return res.render("edit", {
       pageTitle: video.title,
-      video,
     });
   }
 };
@@ -34,25 +33,24 @@ export const getEdit = async (req, res) => {
 export const postEdit = async (req, res) => {
   const { id } = req.params;
   const { title, description, hashtags } = req.body;
-  const video = await Video.findById(id);
+  const video = await Video.exists({ _id: id });
   if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   } else {
     await Video.findByIdAndUpdate(id, {
       title,
       description,
-      hashtags: hashtags
-        .split(",")
-        .map((word) => (word.startsWith("#") ? word : `#${word}`)),
+      hashtags: Video.formatHashtags(hashtags),
     });
     return res.redirect(`/videos/${id}`);
   }
 };
 
-export const deleteVideo = (req, res) => {
-  console.log(req.params);
-  const videoNum = req.params.id;
-  return res.send(`Delete ${videoNum}th Videos`);
+export const deleteVideo = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  await Video.findByIdAndDelete(id);
+  return res.redirect("/");
 };
 
 export const getUpload = (req, res) => {
@@ -65,7 +63,7 @@ export const postUpload = async (req, res) => {
     await Video.create({
       title,
       description,
-      hashtags: hashtags.split(",").map((word) => `#${word}`),
+      hashtags: Video.formatHashtags(hashtags),
     });
     return res.redirect(`/`);
   } catch (error) {
@@ -76,4 +74,15 @@ export const postUpload = async (req, res) => {
   }
 };
 
-export const videoSearch = (req, res) => res.send("Search Videos");
+export const videoSearch = async (req, res) => {
+  const { keyword } = req.query;
+  let videos = [];
+  if (keyword) {
+    videos = await Video.find({
+      title: {
+        $regex: new RegExp(keyword, "i"),
+      },
+    });
+  }
+  return res.render("search", { pageTitle: "Search", videos });
+};
