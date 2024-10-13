@@ -59,5 +59,38 @@ export const postLogin = async (req, res) => {
     }
   }
 };
+
+export const startGithubLogin = (req, res) => {
+  const config = {
+    client_id: process.env.GITHUB_CLIENT,
+    allow_signup: false,
+    scope: "read:user user:email",
+  };
+  const params = new URLSearchParams(config).toString();
+  const baseUrl = "https://github.com/login/oauth/authorize";
+  const finalUrl = `${baseUrl}?${params}`;
+  return res.redirect(finalUrl);
+};
+
+export const finishGithubLogin = async (req, res) => {
+  const config = {
+    client_id: process.env.GITHUB_CLIENT,
+    client_secret: process.env.GITHUB_SECRET,
+    code: req.query.code,
+  };
+  const baseUrl = "https://github.com/login/oauth/authorize";
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+  const data = await fetch(finalUrl, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+  const json = await data.json();
+  console.log(json);
+  res.send(JSON.stringify(json));
+};
+
 export const logout = (req, res) => res.send("User Log Out");
 export const see = (req, res) => res.send("See User's Profile");
