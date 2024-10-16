@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../models/User";
 
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
+
 export const postJoin = async (req, res) => {
   const pageTitle = "Join";
   const { name, email, username, password, password2, location } = req.body;
@@ -28,16 +29,55 @@ export const postJoin = async (req, res) => {
     });
     return res.redirect("/login");
   } catch (error) {
+    console.log(error);
     return res.status(400).render("Join", {
       pageTitle,
       errorMessage: error._message,
     });
   }
 };
-export const userEdit = (req, res) => res.send("Edit User");
+
+export const getEdit = (req, res) => {
+  return res.render("edit-profile", { pageTitle: "Edit Profile" });
+};
+
+export const postEdit = async (req, res) => {
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { name, email, username, location },
+    file,
+  } = req;
+  console.log(file);
+  const exists = await User.exists({ $or: [{ email }, { username }] });
+  if (exists) {
+    return res.status(400).render("edit-profile", {
+      pageTitle: "Edit Profile",
+      errorMessage: "email or username is already exist.",
+    });
+  } else {
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        name,
+        email,
+        username,
+        location,
+        avatarUrl: file ? file.path : avatarUrl,
+      },
+      { new: true }
+    );
+    req.session.user = updatedUser;
+    return res.redirect("/users/edit");
+  }
+};
+
 export const userDelete = (req, res) => res.send("Delete User");
+
 export const getLogin = (req, res) =>
   res.render("login", { pageTitle: "Log In" });
+
 export const postLogin = async (req, res) => {
   const pageTitle = "Login";
   const { username, password } = req.body;
@@ -99,7 +139,6 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
-    console.log(userData);
     const userEmail = await (
       await fetch(`${apiUrl}/user/emails`, {
         headers: {
@@ -107,7 +146,6 @@ export const finishGithubLogin = async (req, res) => {
         },
       })
     ).json();
-    console.log(userEmail);
     const emailObj = userEmail.find((email) => email.primary && email.verified);
     if (!emailObj) {
       // <- set notification
@@ -115,7 +153,7 @@ export const finishGithubLogin = async (req, res) => {
     }
     const user = await User.findOne({ email: emailObj.email });
     if (!user) {
-      const user = await User.create({
+      user = await User.create({
         name: userData.name,
         email: emailObj.email,
         avatarUrl: userData.avatar_url,
@@ -124,13 +162,45 @@ export const finishGithubLogin = async (req, res) => {
         password: "",
         location: userData.location,
       });
-      req.session.loggedIn = true;
-      req.session.user = user;
-      return res.redirect("/");
     }
+    req.session.loggedIn = true;
+    req.session.user = user;
+    return res.redirect("/");
   } else {
-    return res.redirect("login");
+    return res.redirect("/login");
   }
+};
+
+export const getEditPassword = (req, res) => {
+  return res.render("change-password", { pageTitle: "Change Password" });
+};
+
+export const postEditPassword = async (req, res) => {
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { oldPassword, newPassword, confirmedPassword },
+  } = req;
+  const user = await User.findById(_id);
+  const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+  if (newPassword !== confirmedPassword) {
+    return res.status(400).render("change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "Password does not match",
+    });
+  }
+  if (!passwordMatch) {
+    return res.status(400).render("change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "Current Password is incorrect",
+    });
+  }
+  user.password = newPassword;
+  await user.save();
+  req.session.user.password = user.password;
+  // <- add notification
+  return res.redirect("/");
 };
 
 export const logout = (req, res) => {
