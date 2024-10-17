@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import User from "../models/User";
+import Video from "../models/Video";
 
 export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 
@@ -151,7 +152,7 @@ export const finishGithubLogin = async (req, res) => {
       // <- set notification
       return res.redirect("login");
     }
-    const user = await User.findOne({ email: emailObj.email });
+    let user = await User.findOne({ email: emailObj.email });
     if (!user) {
       user = await User.create({
         name: userData.name,
@@ -207,4 +208,12 @@ export const logout = (req, res) => {
   req.session.destroy();
   res.redirect("/");
 };
-export const see = (req, res) => res.send("See User's Profile");
+
+export const see = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id).populate("videos");
+  if (!user) {
+    return res.status(404).render("404", { pageTitle: "User not found" });
+  }
+  return res.render("profile", { pageTitle: user.username, user });
+};

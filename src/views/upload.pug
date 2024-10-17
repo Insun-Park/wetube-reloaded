@@ -4,7 +4,10 @@ block content
     h4 Upload video
     if errorMessage
         span=errorMessage
-    form(method="POST")
+    form(method="POST", enctype="multipart/form-data")
+        label(for="video") Video File
+        input(type="file", name="video", id="video", accept="video/*", required)
+        //- input name is for Multer, Id is for label tag
         input(name="title", placeholder="Video Title", type="text", required, maxlength=80)
         input(name="description", placeholder="Description", type="text", required, minlength=10)
         input(name="hashtags", placeholder="Hashtags, seperated by comma.", type="text", required)
