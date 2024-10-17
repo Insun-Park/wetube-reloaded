@@ -28,6 +28,7 @@ app.use(
 app.use(flash());
 app.use(localMiddleware);
 app.use("/upload", express.static("upload"));
+app.use("/assets", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/users", userRouter);
 app.use("/videos", videoRouter);
