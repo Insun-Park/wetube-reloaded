@@ -2,7 +2,8 @@ extends base.pug
 include mixins/video
 
 block content
-    each item in video
-        +video(item)
-    else 
-        li Sorry, Nothing found.
+    div.video-grid
+        each item in video
+            +video(item)
+        else 
+            span.empty__message Sorry, Nothing found.

@@ -2,7 +2,8 @@ extends base
 include mixins/video
 
 block content
-    each item in user.videos
-        +video(item)
-    else 
-        li Sorry, Nothing found.
+    div.video-grid
+        each item in user.videos
+            +video(item)
+        else 
+            li Sorry, Nothing found.

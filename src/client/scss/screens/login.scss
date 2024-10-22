@@ -1,0 +1,31 @@
+.sign {
+  margin: auto;
+  width: 420px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  .sign__form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    input {
+      all: unset;
+      width: 200px;
+      height: 40px;
+      margin: 3px;
+      padding: 2px 4px;
+      background-color: black;
+      font-size: 20px;
+      color: antiquewhite;
+      text-align: center;
+      border-radius: 5px;
+    }
+    input[type="submit"] {
+      background-color: $red;
+      color: black;
+      cursor: pointer;
+    }
+  }
+}

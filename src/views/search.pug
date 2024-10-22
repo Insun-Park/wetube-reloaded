@@ -2,10 +2,16 @@ extends base
 include mixins/video
 
 block content 
-    form(method="GET")
+    form(method="GET").search__form
         input(name="keyword", placeholder="Search by title", type="text")
-        input(type="submit", value="Search now")
+        button
+            i.fa-solid.fa-magnifying-glass
 
-    div
+    div.video-grid
         each video in videos
             +video(video)
+        
+    div.empty__message
+        if (videos.length === 0 && keyword)
+            span Sorry, Nothing found.
+    
