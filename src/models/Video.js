@@ -11,6 +11,7 @@ const videoSchema = new mongoose.Schema({
     views: { type: Number, default: 0, required: true },
     rating: { type: Number, default: 0, required: true },
   },
+  comments: [{type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
   // "ref" is selected Model name of mongoDB
 });

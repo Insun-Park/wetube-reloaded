@@ -26,7 +26,7 @@ export const getEdit = async (req, res) => {
   } = req.session;
   const video = await Video.findById(id);
   if (String(video.owner) !== String(_id)) {
-    // <- add notification
+    req.flash("error", "Not authorized");
     return res.status(403).redirect("/");
   }
   if (!video) {
@@ -47,7 +47,7 @@ export const postEdit = async (req, res) => {
   const { title, description, hashtags } = req.body;
   const video = await Video.exists({ _id: id });
   if (String(video.owner) !== String(_id)) {
-    // <- add notification
+    req.flash("error", "Not authorized");
     return res.status(403).redirect("/");
   }
   if (!video) {
@@ -94,7 +94,7 @@ export const postUpload = async (req, res) => {
     const newVideo = await Video.create({
       title,
       description,
-      fileUrl: file.path,
+      fileUrl: file.location,
       // ES6 -> fileUrl,
       hashtags: Video.formatHashtags(hashtags),
       owner: _id,
@@ -122,4 +122,15 @@ export const videoSearch = async (req, res) => {
     }).populate("owner");
   }
   return res.render("search", { pageTitle: "Search", videos, keyword });
+};
+
+export const registerView = async (req, res) => {
+  const { id } = req.params;
+  const video = await Video.findById(id);
+  if (!video) {
+    return res.sendStatus(404);
+  }
+  video.meta.views += 1;
+  await video.save();
+  return res.sendStatus(200);
 };

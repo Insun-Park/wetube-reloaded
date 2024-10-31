@@ -66,7 +66,7 @@ export const postEdit = async (req, res) => {
         email,
         username,
         location,
-        avatarUrl: file ? file.path : avatarUrl,
+        avatarUrl: file ? file.location : avatarUrl,
       },
       { new: true }
     );
@@ -201,12 +201,13 @@ export const postEditPassword = async (req, res) => {
   user.password = newPassword;
   await user.save();
   req.session.user.password = user.password;
-  // <- add notification
+  req.flash("info", "Password Updated")
   return res.redirect("/");
 };
 
 export const logout = (req, res) => {
   req.session.destroy();
+  req.flash("info", "Bye Bye");
   res.redirect("/");
 };
 
